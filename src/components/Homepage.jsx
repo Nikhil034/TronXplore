@@ -1,13 +1,20 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import styled from "styled-components";
-import { motion } from "framer-motion";
+import {
+  motion,
+  useAnimation,
+  useScroll,
+  useTransform,
+  useSpring,
+} from "framer-motion";
 import users from "../assets/users.png";
 import userBoy from "../assets/userBoy.png";
 import userGirl from "../assets/userGirl.png";
 import rocket from "../assets/rocket.png";
 import chain from "../assets/chain.png";
 import trophy from "../assets/trophy.png";
-import { useNavigate } from "react-router-dom";
+import { useInView } from "react-intersection-observer";
+import { debounce } from "lodash"; 
 
 const HomeContainer = styled(motion.div)`
   display: flex;
@@ -176,47 +183,132 @@ const WhatYouLearnTitle = styled(motion.h2)`
   color: #ffffff;
   font-weight: 600;
   text-shadow: 2px 2px 4px rgba(255, 0, 0, 0.2);
+  margin-bottom: 50px;
 `;
 
 const WhatYouLearnContent = styled(motion.div)`
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   height: 100%;
 `;
 
-const LearnGrid = styled(motion.div)`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  flex: 1;
-  margin: 80px 80px 80px 0;
-`;
 
-const LearnCard = styled(motion.div)`
+const RoadmapStep = styled(motion.div)`
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   padding: 20px;
+  margin-bottom: 50px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  // transition: all 0.3s ease;
+  position: relative;
 
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(255, 0, 0, 0.2);
+  &::before {
+    content: "";
+    position: absolute;
+    left: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background-color: #ff0000;
+    border-radius: 50%;
+    box-shadow: 0 0 0 5px rgba(255, 0, 0, 0.2);
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: -20px;
+    top: 100%;
+    bottom: -50px;
+    width: 2px;
+    background-color: rgba(255, 0, 0, 0.5);
+  }
+
+  &:last-child::after {
+    display: none;
   }
 `;
 
-const LearnCardTitle = styled(motion.h3)`
+const StepTitle = styled(motion.h3)`
   font-size: 20px;
   color: #ff0000;
   margin-bottom: 10px;
   font-weight: 500;
 `;
 
-const LearnCardDescription = styled(motion.p)`
+const StepDescription = styled(motion.p)`
   font-size: 14px;
   color: #ffffff;
 `;
+
+const StickyImageContainer = styled(motion.div)`
+  position: sticky;
+  top: 100px;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+`;
+
+const StepComponent = ({ step }) => {
+  const controls = useAnimation();
+  const [ref, inView] = useInView({
+    threshold: 0.5,
+    triggerOnce: false,
+  });
+
+  const [hasAnimated, setHasAnimated] = useState(false);
+
+  const debouncedAnimate = debounce((isInView) => {
+    if (isInView && !hasAnimated) {
+      controls.start("visible");
+      setHasAnimated(true);
+    } else if (!isInView && hasAnimated) {
+      controls.start("hidden");
+      setHasAnimated(false);
+    }
+  }, 50); // Adjust this value to fine-tune the smoothness
+
+  useEffect(() => {
+    debouncedAnimate(inView);
+    return () => debouncedAnimate.cancel();
+  }, [inView, debouncedAnimate]);
+
+  return (
+    <RoadmapStep
+      ref={ref}
+      animate={controls}
+      initial="hidden"
+      variants={{
+        visible: { 
+          opacity: 1, 
+          y: 0, 
+          transition: { duration: 0.9, ease: "easeIn" } 
+        },
+        hidden: { 
+          opacity: 0, 
+          y: 50, 
+          transition: { duration: 0.9, ease: "easeOut" } 
+        },
+      }}
+    >
+      <StepTitle>{step.title}</StepTitle>
+      <StepDescription>{step.description}</StepDescription>
+    </RoadmapStep>
+  );
+};
+
+const RoadmapContainer = ({ roadmapSteps }) => {
+  return (
+    <div>
+      {roadmapSteps.map((step, index) => (
+        <StepComponent key={index} step={step} />
+      ))}
+    </div>
+  );
+};
 
 const JoinUsContainer = styled(motion.div)`
   background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
@@ -273,7 +365,71 @@ const SignUpButton = styled(motion.button)`
 `;
 
 const Homepage = () => {
-  const navigate = useNavigate();
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"],
+  });
+
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001,
+  });
+
+  const roadmapSteps = [
+    {
+      title: "Create A wallet",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    },
+    {
+      title: "Connect Wallet to a website",
+      description:
+        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    },
+    {
+      title: "Sign A transaction",
+      description:
+        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+    },
+    {
+      title: "Get Test Trx",
+      description:
+        "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.",
+    },
+    {
+      title: "Send Trx to an Address",
+      description:
+        "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui.",
+    },
+    {
+      title: "Check Bandwidth and Energy used",
+      description: "Officia deserunt mollit anim id est laborum.",
+    },
+    {
+      title: "Get Energy for use by staking",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    },
+    {
+      title: "Mint TRC20 Tokens",
+      description:
+        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    },
+    {
+      title: "Approve Tokens for transfer and Transfer TRC20 Tokens",
+      description: "Ut enim ad minim veniam, quis nostrud exercitation.",
+    },
+    {
+      title: "View Transaction",
+      description:
+        "Duis aute irure dolor in reprehenderit in voluptate velit esse.",
+    },
+    {
+      title: "Get Certificate for completed Tasks",
+      description:
+        "Excepteur sint occaecat cupidatat non proident, sunt in culpa.",
+    },
+  ];
 
   const handleStartClick = (e) => {
     e.preventDefault();
@@ -422,71 +578,34 @@ const Homepage = () => {
         </FeaturesGrid>
       </KeyFeaturesContainer>
 
-      <WhatYouLearnContainer
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
+      <WhatYouLearnContainer>
+      <WhatYouLearnTitle
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
       >
-        <WhatYouLearnTitle variants={itemVariants}>
-          What you learn
-        </WhatYouLearnTitle>
-        <WhatYouLearnContent>
-          <LearnGrid variants={containerVariants}>
-            <LearnCard variants={cardVariants} whileHover="hover">
-              <LearnCardTitle variants={itemVariants}>
-                Bandwidth and Energy
-              </LearnCardTitle>
-              <LearnCardDescription variants={itemVariants}>
-                Understand how bandwidth and energy work in the TRON network,
-                optimizing your transactions.
-              </LearnCardDescription>
-            </LearnCard>
-            <LearnCard variants={cardVariants} whileHover="hover">
-              <LearnCardTitle variants={itemVariants}>
-                Mint TRC20 Tokens
-              </LearnCardTitle>
-              <LearnCardDescription variants={itemVariants}>
-                Learn to create and deploy your own TRC20 tokens on the TRON
-                blockchain.
-              </LearnCardDescription>
-            </LearnCard>
-            <LearnCard variants={cardVariants} whileHover="hover">
-              <LearnCardTitle variants={itemVariants}>
-                Get TRX Tokens
-              </LearnCardTitle>
-              <LearnCardDescription variants={itemVariants}>
-                Discover how to acquire and manage TRX, the native
-                cryptocurrency of the TRON network.
-              </LearnCardDescription>
-            </LearnCard>
-            <LearnCard variants={cardVariants} whileHover="hover">
-              <LearnCardTitle variants={itemVariants}>
-                Earn NFT Certificates
-              </LearnCardTitle>
-              <LearnCardDescription variants={itemVariants}>
-                Complete tasks and challenges to earn unique NFT certificates,
-                showcasing your blockchain expertise.
-              </LearnCardDescription>
-            </LearnCard>
-          </LearnGrid>
-          <motion.div variants={itemVariants}>
-            <StyledImage
-              src={userBoy}
-              alt="Boy playing with blocks"
-              width={450}
-              height={450}
-              animate={{
-                rotate: [0, 5, 0, -5, 0],
-              }}
-              transition={{
-                duration: 10,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
-          </motion.div>
-        </WhatYouLearnContent>
-      </WhatYouLearnContainer>
+        Your Learning Roadmap
+      </WhatYouLearnTitle>
+      <WhatYouLearnContent>
+        <RoadmapContainer roadmapSteps={roadmapSteps} />
+        <StickyImageContainer>
+          <StyledImage
+            src={userBoy}
+            alt="Boy playing with blocks"
+            width={450}
+            height={450}
+            animate={{
+              rotate: [0, 5, 0, -5, 0],
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+        </StickyImageContainer>
+      </WhatYouLearnContent>
+    </WhatYouLearnContainer>
 
       <JoinUsContainer
         initial="hidden"
