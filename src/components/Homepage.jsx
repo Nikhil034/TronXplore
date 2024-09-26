@@ -4,8 +4,6 @@ import {
   motion,
   useAnimation,
   useScroll,
-  useTransform,
-  useSpring,
 } from "framer-motion";
 import users from "../assets/users.png";
 import userBoy from "../assets/userBoy.png";
@@ -15,6 +13,7 @@ import chain from "../assets/chain.png";
 import trophy from "../assets/trophy.png";
 import { useInView } from "react-intersection-observer";
 import { debounce } from "lodash"; 
+import logo from "../assets/logo.png"
 
 const HomeContainer = styled(motion.div)`
   display: flex;
@@ -252,6 +251,60 @@ const StickyImageContainer = styled(motion.div)`
   align-items: flex-start;
 `;
 
+const FooterContainer = styled(motion.footer)`
+  background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+  padding: 50px 120px;
+  color: #000000;
+  font-family: "Poppins", sans-serif;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 50vh;
+  // border-bottom:1px solid black;
+`;
+
+const FooterContent = styled(motion.div)`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 50%;
+`;
+
+const FooterLogo = styled.h1`
+  font-size: 24px;
+  color: #000000;
+  margin: 0;
+  font-weight: 800;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  display:flex;
+  align-items:center;
+`;
+
+const FooterDescription = styled.p`
+  font-size: 14px;
+  color: #333333;
+  line-height: 1.6;
+`;
+
+const Copyright = styled.p`
+  font-size: 12px;
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+  // margin:auto;
+  display:flex;
+  justify-content:center;
+  background:black;
+  padding:10px;
+  margin:0;
+`;
+
+const LogoImage= styled.img`
+  width:60px;
+  height:60px;
+  margin-right:10px;
+`
+
 const StepComponent = ({ step }) => {
   const controls = useAnimation();
   const [ref, inView] = useInView({
@@ -310,59 +363,6 @@ const RoadmapContainer = ({ roadmapSteps }) => {
   );
 };
 
-const JoinUsContainer = styled(motion.div)`
-  background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
-  padding: 50px 120px;
-  color: #000000;
-  font-family: "Poppins", sans-serif;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  min-height: 100vh;
-`;
-
-const JoinUsContent = styled(motion.div)`
-  flex: 1;
-  max-width: 500px;
-`;
-
-const JoinUsTitle = styled(motion.h2)`
-  font-size: 45px;
-  font-weight: 600;
-  margin-bottom: 20px;
-  text-shadow: 2px 2px 4px rgba(255, 0, 0, 0.1);
-`;
-
-const JoinUsDescription = styled(motion.p)`
-  font-size: 18px;
-  margin-bottom: 30px;
-`;
-
-const SignUpButton = styled(motion.button)`
-  background: linear-gradient(45deg, #ff0000, #cc0000);
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 25px;
-  font-size: 18px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  width: fit-content;
-  font-weight: 800;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 8px rgba(255, 0, 0, 0.15);
-  }
-
-  &::after {
-    content: "→";
-    margin-left: 10px;
-  }
-`;
 
 const Homepage = () => {
   const containerRef = useRef(null);
@@ -371,69 +371,63 @@ const Homepage = () => {
     offset: ["start end", "end start"],
   });
 
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001,
-  });
-
   const roadmapSteps = [
     {
-      title: "Create A wallet",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      title: "Create a TronLink Wallet",
+      description: "Set up your digital wallet to interact with the Tron blockchain.",
     },
     {
-      title: "Connect Wallet to a website",
+      title: "Connect Wallet to a Website",
       description:
-        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "Learn to link your TronLink wallet for seamless blockchain interactions.",
+    },
+    {
+      title: "Mastering TronLink",
+      description:
+        " Learn Energy, Bandwidth, Freezing, and Staking to navigate the Tron ecosystem efficiently.",
     },
     {
       title: "Sign A transaction",
       description:
-        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+        "Understand the process of authorizing and signing blockchain transactions securely.",
     },
     {
-      title: "Get Test Trx",
+      title: "Obtain TRX Tokens",
       description:
-        "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.",
+      "Acquire TRX tokens to fuel your transactions on the Tron network.",
     },
     {
-      title: "Send Trx to an Address",
+      title: "Understand TRC-20 Tokens",
+      description: "Learn about TRC-20 token standard and its applications in decentralized apps.",
+    },
+    {
+      title: "Send TRX to Another Address",
       description:
-        "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui.",
+        "Practice transferring TRX tokens between different Tron blockchain addresses.",
     },
     {
-      title: "Check Bandwidth and Energy used",
-      description: "Officia deserunt mollit anim id est laborum.",
-    },
-    {
-      title: "Get Energy for use by staking",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    },
-    {
-      title: "Mint TRC20 Tokens",
-      description:
-        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      title: "Stake TRX for Energy",
+      description: "Explore staking mechanisms to gain Energy for smart contract interactions.",
     },
     {
       title: "Approve Tokens for transfer and Transfer TRC20 Tokens",
-      description: "Ut enim ad minim veniam, quis nostrud exercitation.",
+      description: "Learn to authorize and execute TRC20 token transfers securely",
     },
     {
       title: "View Transaction",
       description:
-        "Duis aute irure dolor in reprehenderit in voluptate velit esse.",
+        "Explore transaction details and track your Tron network activities effectively",
     },
     {
       title: "Get Certificate for completed Tasks",
       description:
-        "Excepteur sint occaecat cupidatat non proident, sunt in culpa.",
+        "Earn recognition for your achievements in mastering Tron network operations",
     },
   ];
 
   const handleStartClick = (e) => {
     e.preventDefault();
-    window.location.href = "https://sky-office.co/";
+    window.location.href = "https://tronxplore-app.vercel.app/";
   };
 
   const containerVariants = {
@@ -607,7 +601,7 @@ const Homepage = () => {
       </WhatYouLearnContent>
     </WhatYouLearnContainer>
 
-      <JoinUsContainer
+    <FooterContainer
         initial="hidden"
         animate="visible"
         variants={containerVariants}
@@ -616,8 +610,8 @@ const Homepage = () => {
           <StyledImage
             src={userGirl}
             alt="Girl character"
-            width={650}
-            height={650}
+            width={400}
+            height={400}
             animate={{
               scale: [1, 1.05, 1],
             }}
@@ -628,18 +622,30 @@ const Homepage = () => {
             }}
           />
         </motion.div>
-        <JoinUsContent variants={itemVariants}>
-          <JoinUsTitle>Join us</JoinUsTitle>
-          <JoinUsDescription>
-            Embark on an exciting journey into the world of blockchain
-            technology. Our platform offers a unique, gamified experience to
-            help you understand and excel in the TRON ecosystem.
-          </JoinUsDescription>
-          <SignUpButton whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            SIGN UP NOW
-          </SignUpButton>
-        </JoinUsContent>
-      </JoinUsContainer>
+        <FooterContent variants={itemVariants}>
+          <FooterLogo>
+          <LogoImage src={logo} alt="TRONXPLORE Logo" />
+          <Logo variants={itemVariants}>
+            TRON
+            <motion.span
+              style={{ color: "#ff0000", fontSize: "35px" }}
+              animate={{
+                scale: [1, 1.2, 1],
+                rotate: [0, 10, -10, 0],
+              }}
+              transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+            >
+              X
+            </motion.span>
+            PLORE
+          </Logo>
+          </FooterLogo>
+          <FooterDescription>
+            Embark on an exciting journey into the world of blockchain technology. Our platform offers a unique, gamified experience to help you understand and excel in the TRON ecosystem. Through interactive quests, hands-on blockchain interactions, and NFT certifications, TRONXPLORE makes learning about blockchain fun and rewarding.
+          </FooterDescription>
+        </FooterContent>
+      </FooterContainer>
+      <Copyright>© 2024 TRONXPLORE. All rights reserved.</Copyright>
     </>
   );
 };
