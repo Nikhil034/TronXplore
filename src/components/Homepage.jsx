@@ -15,7 +15,57 @@ import { useInView } from "react-intersection-observer";
 import { debounce } from "lodash"; 
 import logo from "../assets/logo.png"
 
+const SmallScreenContainer = styled(motion.div)`
+  display: none;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #000000 0%, #333333 100%);
+  padding: 20px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  @media (max-width: 1000px) {
+    display: flex;
+  }
+`;
+
+const MessageCard = styled(motion.div)`
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 20px;
+  max-width: 600px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px 0 rgba(157, 30, 30, 0.37);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+`;
+
+const MessageTitle = styled.h1`
+  font-size: 24px;
+  background: radial-gradient(64.18% 64.18% at 71.16% 35.69%, #e09d9d .89%, #e38181 17.23%, #e36464 42.04%, #e34444 55.12%, #e32727 71.54%, #e00202 100%);
+  margin-bottom: 20px;
+  font-family: "Poppins", sans-serif;
+  background-clip: text;
+  -webkit-text-fill-color: #0000;
+`;
+
+const MessageText = styled.p`
+  font-size: 14px;
+  color: #ffffff;
+  line-height: 1.6;
+  margin-bottom: 30px;
+  font-family: "Poppins", sans-serif;
+`;
+
+const DeviceIcon = styled(motion.div)`
+  font-size: 48px;
+  color: #ff0000;
+  margin-bottom: 20px;
+`;
+
 const HomeContainer = styled(motion.div)`
+@media (max-width: 1000px) {
+    display: none;
+  }
   display: flex;
   justify-content: center;
   align-items: center;
@@ -91,8 +141,16 @@ const StyledImage = styled(motion.img)`
 `;
 
 const KeyFeaturesContainer = styled(motion.div)`
+@media (max-width: 1000px) {
+    display: none;
+  }
+ @media (min-width: 1001px) and (max-width: 1350px) {
+    padding: 100px 100px;
+  }
+@media (min-width:1351px) {
+    padding: 100px 250px;
+  }
   background: linear-gradient(135deg, #000000 0%, #333333 100%);
-  padding: 100px 250px;
   color: white;
   font-family: "Poppins", sans-serif;
   min-height: 100vh;
@@ -167,8 +225,16 @@ const FeatureDescription = styled(motion.p)`
 `;
 
 const WhatYouLearnContainer = styled(motion.div)`
+  @media (max-width: 1000px) {
+    display: none;
+  }
+  @media (min-width: 1001px) and (max-width: 1350px) {
+    padding: 50px 60px;
+  }
+  @media (min-width: 1351px) {
+    padding: 50px 120px;
+  }
   background: linear-gradient(135deg, #333333 0%, #000000 100%);
-  padding: 50px 120px;
   color: white;
   font-family: "Poppins", sans-serif;
   min-height: 100vh;
@@ -183,6 +249,11 @@ const WhatYouLearnTitle = styled(motion.h2)`
   font-weight: 600;
   text-shadow: 2px 2px 4px rgba(255, 0, 0, 0.2);
   margin-bottom: 50px;
+  
+  @media (min-width: 1001px) and (max-width: 1350px) {
+    font-size: 40px;
+    margin-bottom: 40px;
+  }
 `;
 
 const WhatYouLearnContent = styled(motion.div)`
@@ -190,8 +261,12 @@ const WhatYouLearnContent = styled(motion.div)`
   justify-content: space-between;
   align-items: flex-start;
   height: 100%;
-`;
+  gap: 40px;
 
+  @media (min-width: 1001px) and (max-width: 1350px) {
+    gap: 20px;
+  }
+`;
 
 const RoadmapStep = styled(motion.div)`
   background-color: rgba(255, 255, 255, 0.1);
@@ -199,8 +274,13 @@ const RoadmapStep = styled(motion.div)`
   padding: 20px;
   margin-bottom: 50px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  // transition: all 0.3s ease;
   position: relative;
+  max-width: 500px;
+
+  @media (min-width: 1001px) and (max-width: 1350px) {
+    padding: 15px;
+    margin-bottom: 40px;
+  }
 
   &::before {
     content: "";
@@ -223,6 +303,10 @@ const RoadmapStep = styled(motion.div)`
     bottom: -50px;
     width: 2px;
     background-color: rgba(255, 0, 0, 0.5);
+
+    @media (min-width: 1001px) and (max-width: 1350px) {
+      bottom: -40px;
+    }
   }
 
   &:last-child::after {
@@ -235,11 +319,20 @@ const StepTitle = styled(motion.h3)`
   color: #ff0000;
   margin-bottom: 10px;
   font-weight: 500;
+
+  @media (min-width: 1001px) and (max-width: 1350px) {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
 `;
 
 const StepDescription = styled(motion.p)`
   font-size: 14px;
   color: #ffffff;
+
+  @media (min-width: 1001px) and (max-width: 1350px) {
+    font-size: 13px;
+  }
 `;
 
 const StickyImageContainer = styled(motion.div)`
@@ -249,9 +342,19 @@ const StickyImageContainer = styled(motion.div)`
   display: flex;
   justify-content: center;
   align-items: flex-start;
+
+  @media (min-width: 1001px) and (max-width: 1350px) {
+    img {
+      width: 400px;
+      height: 400px;
+    }
+  }
 `;
 
 const FooterContainer = styled(motion.footer)`
+@media (max-width: 1000px) {
+    display: none;
+  }
   background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
   padding: 50px 120px;
   color: #000000;
@@ -260,7 +363,6 @@ const FooterContainer = styled(motion.footer)`
   justify-content: space-between;
   align-items: center;
   min-height: 50vh;
-  // border-bottom:1px solid black;
 `;
 
 const FooterContent = styled(motion.div)`
@@ -453,6 +555,23 @@ const Homepage = () => {
     },
   };
 
+  const smallScreenVariants = {
+    initial: { opacity: 0, scale: 0.8 },
+    animate: { 
+      opacity: 1, 
+      scale: 1,
+      transition: { duration: 0.8, ease: "easeOut" }
+    }
+  };
+
+  const iconVar = {
+    animate: {
+      scale: [1, 1.2, 1],
+      rotate: [0, 10, -10, 0],
+      transition: { duration: 2, repeat: Infinity }
+    }
+  };
+
   const cardVariants = {
     hidden: { opacity: 0, scale: 0.8 },
     visible: { opacity: 1, scale: 1, transition: { duration: 0.5 } },
@@ -464,6 +583,26 @@ const Homepage = () => {
 
   return (
     <>
+    <SmallScreenContainer>
+        <MessageCard
+          initial="initial"
+          animate="animate"
+          variants={smallScreenVariants}
+        >
+          <DeviceIcon
+            animate="animate"
+            variants={iconVar}
+          >
+            💻
+          </DeviceIcon>
+          <MessageTitle>Your Adventure Awaits on a Bigger Screen!</MessageTitle>
+          <MessageText>
+            TRONXPLORE's immersive blockchain learning experience is optimized for larger displays. 
+            Grab your laptop or desktop to unlock the full potential of your tron blockchain journey with 
+            interactive quests, real-time demonstrations, and exciting challenges.
+          </MessageText>
+        </MessageCard>
+      </SmallScreenContainer>
       <HomeContainer
         initial="hidden"
         animate="visible"
